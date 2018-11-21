@@ -3,33 +3,16 @@ Ext.define('CustomApp', {
     componentCls: 'app',
 
     launch: function() {
-        //((((Project = "https://rally1.rallydev.com/slm/webservice/v2.x/project/22900723577") OR (User = "/user/1973525753")) OR (Workspace = "https://rally1.rallydev.com/slm/webservice/v2.x/workspace/41529001")) AND ((Name contains "rich-text-templates-
-        // this.add({
-        //     xtype: 'rallygrid',
-        //     columnCfgs: [
-        //         'Name',
-        //         'Type',
-        //         'Value',
-        //         'Project',
-        //         'User',
-        //         'Workspace'
-        //     ],
-        //     context: this.getContext(),
-        //     enableEditing: false,
-        //     showRowActionsColumn: false,
-        //     storeConfig: {
-        //         model: 'Preference',
-        //         filters: filters
-        //     }
-        // });
-
         this._loadTemplatePreferences().then({
             success: this._bucketPrefsTogether,
+            scope: this
+        }).then({
+            success: this._addGrid,
             scope: this
         });
     },
 
-    _loadTemplatePreferences: function() {
+    _loadTemplatePreferences: function(model) {
         var filters = [
             {
                 property: 'Name',
@@ -71,6 +54,7 @@ Ext.define('CustomApp', {
     },
 
     _bucketPrefsTogether: function(records) {
+        this.preferenceModel = records && records.length && records[0].self;
         var bucket = {};  //charlie?
         _.each(records, function(record) {
             var name = record.get('Name');
@@ -80,13 +64,40 @@ Ext.define('CustomApp', {
                 bucket[id] = bucket[id] || {};
                 if (tokens[5] === 'name') {
                     bucket[id].Name = record.get('Value');
-                } else {
-                    debugger;
+                } else if (tokens[5] === 'value') {
+                    delete record.raw.Name;
+                    Ext.apply(bucket[id], record.raw);
                 }
             } else if(name.indexOf('rich-text-templates-default') === 0) {
 
             }
         });
 
+        return _.values(bucket);
+    },
+
+    _addGrid: function(records) {
+         this.add({
+            xtype: 'rallygrid',
+            columnCfgs: [
+                'Name',
+                //'Type',
+                'Value',
+                'Project',
+                'User',
+                'Workspace'
+            ],
+            context: this.getContext(),
+            enableEditing: false,
+            showRowActionsColumn: true,
+            store: Ext.create('Rally.data.custom.Store', {
+                data: records,
+                model: this.preferenceModel
+            }),
+        });
     }
+
+    //TODO: Add copy to clipboard menu action
+    //TODO: Disable edit/delete menu actions
+    //TODO: Render a default for column
 });
