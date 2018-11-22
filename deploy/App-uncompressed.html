@@ -7,6 +7,36 @@
 
     <script type="text/javascript">
         Rally.onReady(function () {
+                Ext.define('Rally.ui.menu.item.CopyTemplate', {
+    alias: 'widget.rallyrecordmenuitemcopytemplate',
+    extend: 'Rally.ui.menu.item.RecordMenuItem',
+
+    config: {
+
+        handler: function() {
+            const el = document.createElement('textarea');
+            el.value = this.record.get('Value')
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            Rally.ui.notify.Notifier.show({ message: 'Template text copied to clipboard.' });
+        },
+
+        text: 'Copy Template Text'
+    }
+});
+
+
+                Ext.define('Rally.ui.menu.DefaultRecordMenuFix', {
+    override: 'Rally.ui.menu.DefaultRecordMenu',
+    _getMenuItems: function() {
+        return [{
+            xtype: 'rallyrecordmenuitemcopytemplate',
+            record: this.getRecord()
+        }];
+    }
+});
                 Ext.define('CustomApp', {
     extend: 'Rally.app.App',
     componentCls: 'app',
@@ -124,8 +154,8 @@
 
 
     <style type="text/css">
-        .app {
-  /* Add app styles here */
+        .app textarea {
+  display: none;
 }
 
     </style>

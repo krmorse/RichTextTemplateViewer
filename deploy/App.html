@@ -7,6 +7,8 @@
 
     <script type="text/javascript">
         Rally.onReady(function () {
+                Ext.define("Rally.ui.menu.item.CopyTemplate",{alias:"widget.rallyrecordmenuitemcopytemplate",extend:"Rally.ui.menu.item.RecordMenuItem",config:{handler:function(){const e=document.createElement("textarea");e.value=this.record.get("Value"),document.body.appendChild(e),e.select(),document.execCommand("copy"),document.body.removeChild(e),Rally.ui.notify.Notifier.show({message:"Template text copied to clipboard."})},text:"Copy Template Text"}});
+                Ext.define("Rally.ui.menu.DefaultRecordMenuFix",{override:"Rally.ui.menu.DefaultRecordMenu",_getMenuItems:function(){return[{xtype:"rallyrecordmenuitemcopytemplate",record:this.getRecord()}]}});
                 Ext.define("CustomApp",{extend:"Rally.app.App",componentCls:"app",launch:function(){this._loadTemplatePreferences().then({success:this._bucketPrefsTogether,scope:this}).then({success:this._addGrid,scope:this})},_loadTemplatePreferences:function(){var e=[{property:"Name",operator:"contains",value:"rich-text-templates-"},Rally.data.wsapi.Filter.or([{property:"Workspace",value:this.getContext().getWorkspaceRef()},{property:"Project",value:this.getContext().getProjectRef()},{property:"User",value:Rally.util.Ref.getRelativeUri(this.getContext().getUser())}])];return Ext.create("Rally.data.wsapi.Store",{model:"Preference",filters:e,sorters:[{property:"Name",direction:"ASC"}],pageSize:2e3,limit:1/0,fetch:["Name","Type","Value","Project","User","Workspace","CreationDate"],context:{workspace:this.getContext().getWorkspaceRef(),project:null}}).load()},_bucketPrefsTogether:function(e){this.preferenceModel=e&&e.length&&e[0].self;var t={};return _.each(e,function(e){var a=e.get("Name");if(0===a.indexOf("rich-text-templates-template-")){var r=a.split("-"),o=r[4];t[o]=t[o]||{},"name"===r[5]?t[o].Name=e.get("Value"):"value"===r[5]&&(delete e.raw.Name,Ext.apply(t[o],e.raw))}else a.indexOf("rich-text-templates-default")}),_.values(t)},_addGrid:function(e){this.add({xtype:"rallygrid",columnCfgs:["Name","Value","Project","User","Workspace"],context:this.getContext(),enableEditing:!1,showRowActionsColumn:!0,store:Ext.create("Rally.data.custom.Store",{data:e,model:this.preferenceModel})})}});
 
             Rally.launchApp('CustomApp', {
@@ -20,7 +22,7 @@
 
 
     <style type="text/css">
-        
+        .app textarea{display:none}
     </style>
 </head>
 <body>
