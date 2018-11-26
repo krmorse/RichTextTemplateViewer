@@ -1,13 +1,14 @@
-RichTextTemplateViewer
-=========================
+# Rich Text Template Viewer
 
-## Overview
+This app was created to assist with the migration from EDP rich text templates to the fancy new templates functionality included with the upcoming QDP/FDP release.
 
+![screenshot](preview.png)
 
-## License
+## Installation
+The app is installed as a Custom HTML App ([see help documentation](https://help.rallydev.com/custom-html))
 
-RichTextTemplateViewer is released under the MIT license.  See the file [LICENSE](./LICENSE) for the full text.
+Simply copy/paste the deployable code here: [deploy/App.html](deploy/App.html)
 
-##Documentation for SDK
+## Usage
 
-You can find the documentation on our help [site.](https://help.rallydev.com/apps/2.1/doc/)
+Marianne help.
