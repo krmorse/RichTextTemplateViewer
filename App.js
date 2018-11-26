@@ -77,7 +77,14 @@ Ext.define('CustomApp', {
             } else if(name.indexOf('rich-text-templates-default') === 0) {
                 id = record.get('Value');
                 tokens = record.get('Name').split('-');
-                defaults[id] = Ext.String.capitalize((tokens[tokens.length - 2] + '.' + tokens[tokens.length - 1]).replace('hierarchicalrequirement', 'story'));
+                
+                var existingDefault = defaults[id];
+                if (existingDefault) {
+                    existingDefault += ',\r\n';
+                } else {
+                    existingDefault = '';
+                }
+                defaults[id] = existingDefault + Ext.String.capitalize((tokens[tokens.length - 2] + '.' + tokens[tokens.length - 1]).replace('hierarchicalrequirement', 'story'));
             }
         });
 

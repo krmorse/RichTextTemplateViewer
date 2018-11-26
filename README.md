@@ -11,4 +11,4 @@ Simply copy/paste the deployable code here: [deploy/App.html](deploy/App.html)
 
 ## Usage
 
-Marianne help.
+Please see this community post, which has very detailed instructions on how to use this app: [https://communities.ca.com/message/242155126-product-announcement-migrate-rich-text-edp-templates-to-work-item-qdp-templates](https://communities.ca.com/message/242155126-product-announcement-migrate-rich-text-edp-templates-to-work-item-qdp-templates)
