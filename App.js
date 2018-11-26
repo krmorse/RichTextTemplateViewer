@@ -55,12 +55,15 @@ Ext.define('CustomApp', {
 
     _bucketPrefsTogether: function(records) {
         this.preferenceModel = records && records.length && records[0].self;
+        this.preferenceModel.addField({ name: 'DefaultFor'});
         var bucket = {};  //charlie?
+        var defaults = {};
+        var id, tokens;
         _.each(records, function(record) {
             var name = record.get('Name');
             if (name.indexOf('rich-text-templates-template-') === 0) {
-                var tokens = name.split('-');
-                var id = tokens[4];
+                tokens = name.split('-');
+                id = tokens[4];
                 bucket[id] = bucket[id] || {};
                 if (tokens[5] === 'name') {
                     bucket[id].Name = record.get('Value');
@@ -68,8 +71,13 @@ Ext.define('CustomApp', {
                     delete record.raw.Name;
                     Ext.apply(bucket[id], record.raw);
                 }
+                if (defaults[id]) {
+                    bucket[id].DefaultFor = defaults[id];
+                }
             } else if(name.indexOf('rich-text-templates-default') === 0) {
-
+                id = record.get('Value');
+                tokens = record.get('Name').split('-');
+                defaults[id] = (Ext.String.capitalize(tokens[tokens.length - 2]) + '.' + tokens[tokens.length - 1]).replace('HierarchicalRequirement', 'Story');
             }
         });
 
@@ -81,8 +89,11 @@ Ext.define('CustomApp', {
             xtype: 'rallygrid',
             columnCfgs: [
                 'Name',
-                //'Type',
                 'Value',
+                {
+                    dataIndex: 'DefaultFor',
+                    text: 'Default For'
+                },
                 'Project',
                 'User',
                 'Workspace'
