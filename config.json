@@ -4,8 +4,6 @@
     "server": "https://rally1.rallydev.com",
     "sdk": "2.1",
     "javascript": [
-        "CopyTemplateMenuItem.js",
-        "DefaultRecordMenuFix.js",
         "App.js"
     ],
     "css": [

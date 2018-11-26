@@ -87,9 +87,12 @@ Ext.define('CustomApp', {
                 'User',
                 'Workspace'
             ],
+            viewConfig: {
+                enableTextSelection: true
+            },
             context: this.getContext(),
             enableEditing: false,
-            showRowActionsColumn: true,
+            showRowActionsColumn: false,
             store: Ext.create('Rally.data.custom.Store', {
                 data: records,
                 model: this.preferenceModel
