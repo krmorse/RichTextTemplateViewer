@@ -11,8 +11,31 @@
     extend: 'Rally.app.App',
     componentCls: 'app',
 
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    items: [
+        {
+            xtype: 'container',
+            layout: 'fit',
+            itemId: 'headerContainer',
+            height: 40
+        },
+        {
+            xtype: 'container',
+            layout: 'fit',
+            itemId: 'gridContainer',
+            flex: 1
+        }
+    ],
+
     launch: function() {
-        this._loadTemplatePreferences().then({
+        this._loadTypes().then({
+            success: this._loadTemplatePreferences,
+            scope: this
+        }).then({
             success: this._bucketPrefsTogether,
             scope: this
         }).then({
@@ -21,7 +44,32 @@
         });
     },
 
-    _loadTemplatePreferences: function() {
+    _loadTypes: function() {
+        return Ext.create('Rally.data.wsapi.Store',{
+            model: 'TypeDefinition',
+            sorters: [
+                {
+                    property: 'Name'
+                }
+            ],
+            fetch: ['DisplayName', 'ElementName', 'TypePath', 'Parent', 'Name'],
+            filters: [
+                {
+                    property: 'Creatable',
+                    value: true
+                }
+            ],
+            autoLoad: false,
+            remoteSort: false,
+            remoteFilter: true
+        }).load();
+    },
+
+    _loadTemplatePreferences: function(records) {
+        this.types = _.pluck(_.filter(_.pluck(records, 'raw'), function(record) {
+            return _.contains(['SchedulableArtifact', 'PortfolioItem', 'Requirement', 'Artifact'], record.Parent.ElementName);
+        }), 'TypePath');
+
         var filters = [
             {
                 property: 'Name',
@@ -101,7 +149,12 @@
     },
 
     _addGrid: function(records) {
-         this.add({
+        this.down('#headerContainer').add({
+            xtype: 'rallyaddnew',
+            recordTypes: this.types,
+            disableAddButton: true
+        });
+        this.down('#gridContainer').add({
             xtype: 'rallygrid',
             columnCfgs: [
                 'Name',
